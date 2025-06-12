@@ -27,7 +27,7 @@ use tracing::error;
 /// The current value is chosen because it is guaranteed to work everywhere.
 /// To allow for bigger values, a check must be made for the limits
 /// of the GPU at runtime, which would mean not using consts anymore.
-pub const MAX_JOINTS: usize = 256;
+pub const MAX_JOINTS: usize = 1024;
 
 /// The total number of joints we support.
 ///

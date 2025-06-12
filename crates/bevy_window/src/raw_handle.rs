@@ -33,6 +33,10 @@ impl<W: Send + Sync + 'static> WindowWrapper<W> {
             ty: PhantomData,
         }
     }
+
+    pub fn clone_window(&self) -> Arc<W> {
+        self.reference.clone().downcast::<W>().unwrap()
+    }
 }
 
 impl<W: 'static> Deref for WindowWrapper<W> {

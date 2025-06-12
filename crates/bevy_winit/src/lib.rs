@@ -48,7 +48,7 @@ mod converters;
 pub mod cursor;
 #[cfg(feature = "custom_cursor")]
 mod custom_cursor;
-mod state;
+pub mod state;
 mod system;
 mod winit_config;
 mod winit_monitors;
@@ -93,49 +93,49 @@ impl<T: BufferedEvent> Plugin for WinitPlugin<T> {
     }
 
     fn build(&self, app: &mut App) {
-        let mut event_loop_builder = EventLoop::<T>::with_user_event();
+        // let mut event_loop_builder = EventLoop::<T>::with_user_event();
 
-        // linux check is needed because x11 might be enabled on other platforms.
-        #[cfg(all(target_os = "linux", feature = "x11"))]
-        {
-            use winit::platform::x11::EventLoopBuilderExtX11;
+        // // linux check is needed because x11 might be enabled on other platforms.
+        // #[cfg(all(target_os = "linux", feature = "x11"))]
+        // {
+        //     use winit::platform::x11::EventLoopBuilderExtX11;
 
-            // This allows a Bevy app to be started and ran outside the main thread.
-            // A use case for this is to allow external applications to spawn a thread
-            // which runs a Bevy app without requiring the Bevy app to need to reside on
-            // the main thread, which can be problematic.
-            event_loop_builder.with_any_thread(self.run_on_any_thread);
-        }
+        //     // This allows a Bevy app to be started and ran outside the main thread.
+        //     // A use case for this is to allow external applications to spawn a thread
+        //     // which runs a Bevy app without requiring the Bevy app to need to reside on
+        //     // the main thread, which can be problematic.
+        //     event_loop_builder.with_any_thread(self.run_on_any_thread);
+        // }
 
-        // linux check is needed because wayland might be enabled on other platforms.
-        #[cfg(all(target_os = "linux", feature = "wayland"))]
-        {
-            use winit::platform::wayland::EventLoopBuilderExtWayland;
-            event_loop_builder.with_any_thread(self.run_on_any_thread);
-        }
+        // // linux check is needed because wayland might be enabled on other platforms.
+        // #[cfg(all(target_os = "linux", feature = "wayland"))]
+        // {
+        //     use winit::platform::wayland::EventLoopBuilderExtWayland;
+        //     event_loop_builder.with_any_thread(self.run_on_any_thread);
+        // }
 
-        #[cfg(target_os = "windows")]
-        {
-            use winit::platform::windows::EventLoopBuilderExtWindows;
-            event_loop_builder.with_any_thread(self.run_on_any_thread);
-        }
+        // #[cfg(target_os = "windows")]
+        // {
+        //     use winit::platform::windows::EventLoopBuilderExtWindows;
+        //     event_loop_builder.with_any_thread(self.run_on_any_thread);
+        // }
 
-        #[cfg(target_os = "android")]
-        {
-            use winit::platform::android::EventLoopBuilderExtAndroid;
-            let msg = "Bevy must be setup with the #[bevy_main] macro on Android";
-            event_loop_builder.with_android_app(bevy_window::ANDROID_APP.get().expect(msg).clone());
-        }
+        // #[cfg(target_os = "android")]
+        // {
+        //     use winit::platform::android::EventLoopBuilderExtAndroid;
+        //     let msg = "Bevy must be setup with the #[bevy_main] macro on Android";
+        //     event_loop_builder.with_android_app(bevy_window::ANDROID_APP.get().expect(msg).clone());
+        // }
 
-        let event_loop = event_loop_builder
-            .build()
-            .expect("Failed to build event loop");
+        // let event_loop = event_loop_builder
+        //     .build()
+        //     .expect("Failed to build event loop");
 
         app.init_resource::<WinitMonitors>()
             .init_resource::<WinitSettings>()
-            .insert_resource(DisplayHandleWrapper(event_loop.owned_display_handle()))
+            // .insert_resource(DisplayHandleWrapper(event_loop.owned_display_handle()))
             .add_event::<RawWinitWindowEvent>()
-            .set_runner(|app| winit_runner(app, event_loop))
+            // .set_runner(|app| winit_runner(app, event_loop))
             .add_systems(
                 Last,
                 (
@@ -182,7 +182,7 @@ pub struct RawWinitWindowEvent {
 ///
 /// Use `Res<EventLoopProxy>` to receive this resource.
 #[derive(Resource, Deref)]
-pub struct EventLoopProxyWrapper<T: 'static>(EventLoopProxy<T>);
+pub struct EventLoopProxyWrapper<T: 'static>(pub EventLoopProxy<T>);
 
 /// A wrapper around [`winit::event_loop::OwnedDisplayHandle`]
 ///
